@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiteBus.Host", "src\LiteBus
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiteBus.Domain", "src\LiteBus.Domain\LiteBus.Domain.csproj", "{A774BC3E-F7A7-4FA5-A577-AE3AD1FCF691}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiteBus.Core", "src\LiteBus.Core\LiteBus.Core.csproj", "{6C139DDA-9D0D-4542-92F9-A32846EBA9EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{A774BC3E-F7A7-4FA5-A577-AE3AD1FCF691}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A774BC3E-F7A7-4FA5-A577-AE3AD1FCF691}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A774BC3E-F7A7-4FA5-A577-AE3AD1FCF691}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C139DDA-9D0D-4542-92F9-A32846EBA9EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C139DDA-9D0D-4542-92F9-A32846EBA9EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C139DDA-9D0D-4542-92F9-A32846EBA9EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C139DDA-9D0D-4542-92F9-A32846EBA9EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,5 +38,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{32E836CC-AA26-49F6-AB59-227C999CF900} = {542BF028-CFB8-4FE4-B809-2805EAEA4C0B}
 		{A774BC3E-F7A7-4FA5-A577-AE3AD1FCF691} = {40F1909A-F19A-4A7C-82E6-0FF6A2875FDD}
+		{6C139DDA-9D0D-4542-92F9-A32846EBA9EF} = {542BF028-CFB8-4FE4-B809-2805EAEA4C0B}
 	EndGlobalSection
 EndGlobal

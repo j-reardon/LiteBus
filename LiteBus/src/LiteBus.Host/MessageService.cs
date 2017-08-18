@@ -1,6 +1,11 @@
-﻿using LiteBus.Domain.Concepts;
+﻿using LiteBus.Core;
+using LiteBus.Domain.Concepts;
 using LiteBus.Domain.Providers;
+using StructureMap;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Messaging;
 using System.Reflection;
 using System.ServiceProcess;
@@ -13,6 +18,7 @@ namespace LiteBus.Host
         private readonly IInitializeMessageService _messageServiceInitializer;
         private readonly IQueuePathProvider _qPathProvider;
         private readonly ISerializationProvider _serializer;
+        private readonly IContainer _container;
         private Thread _workerThread;
         private ManualResetEvent _shutdownEvent;
         private readonly string _queueName;
@@ -20,11 +26,13 @@ namespace LiteBus.Host
         public MessageService(
             IInitializeMessageService messageServiceInitializer, 
             IQueuePathProvider qPathProvider,
-            ISerializationProvider serializer)
+            ISerializationProvider serializer,
+            IContainer container)
         {
             _messageServiceInitializer = messageServiceInitializer;
             _qPathProvider = qPathProvider;
             _serializer = serializer;
+            _container = container;
             _shutdownEvent = new ManualResetEvent(false);
             _queueName = Assembly.GetCallingAssembly().GetName().Name;
         }
@@ -45,21 +53,51 @@ namespace LiteBus.Host
                 {
                     q.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
                     using (var messageEnumerator = q.GetMessageEnumerator2())
+                    {
                         if (messageEnumerator.MoveNext())
                         {
                             var message = messageEnumerator.Current;
-                            DeserializeMessage(message.Body.ToString());
+                            var liteBusMessage = _serializer.Deserialize<LiteBusMessage>(message.Body.ToString());
+                            CallHandler(liteBusMessage);
                             messageEnumerator.RemoveCurrent();
                         }
+                    }
                 }
             }
         }
 
-        private void DeserializeMessage(string message)
+        private void CallHandler(LiteBusMessage liteBusMessage)
         {
-            var liteBusMessage = _serializer.Deserialize<LiteBusMessage>(message);
             var messageType = Type.GetType($"{liteBusMessage.ObjectType}, {liteBusMessage.ObjectAssembly}");
-            var messageObj = _serializer.Deserialize(liteBusMessage.Message, messageType);
+            var message = Convert.ChangeType(_serializer.Deserialize(liteBusMessage.Message, messageType), messageType);
+            var handlers = GetAllHandlerImplementations(message);
+            foreach (var handler in handlers)
+            {
+                handler.Handle(message);
+            }
+        }
+
+        private IEnumerable<IHandleMessages<T>> GetAllHandlerImplementations<T>(T obj)
+        {
+            var messageHandlerType = typeof(IHandleMessages);
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => messageHandlerType.IsAssignableFrom(p) && !p.IsInterface).ToList();
+
+            var messageHandlers = new List<IHandleMessages<T>>();
+            foreach (var handlerType in types)
+            {
+                foreach (var type in handlerType.GetInterfaces())
+                {
+                    var genericTypeArguments = type.GenericTypeArguments;
+                    if (genericTypeArguments.Any(x => x == obj.GetType()))
+                    {
+                        messageHandlers.Add((IHandleMessages<T>)_container.GetInstance(handlerType));
+                    }
+                }
+            }
+
+            return messageHandlers;
         }
 
         protected override void OnStop()
