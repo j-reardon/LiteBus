@@ -1,6 +1,4 @@
-﻿using LiteBus.Core;
-using LiteBus.Domain;
-using LiteBus.Domain.Concepts;
+﻿using LiteBus.Domain;
 using LiteBus.Domain.Providers;
 using StructureMap;
 using System;
@@ -19,7 +17,6 @@ namespace LiteBus.Host
             var messageHandler = new MessageService(initializer, qPathProvider, serializer, container);
             if (Environment.UserInteractive)
             {
-                Test(container.GetInstance<MessageSender>(), "litebus.host");
                 messageHandler.RunAsConsole(args);
             }
             else
@@ -28,15 +25,6 @@ namespace LiteBus.Host
                 servicesToRun = new ServiceBase[] { messageHandler };
                 ServiceBase.Run(servicesToRun);
             }
-        }
-
-        private static void Test(IMessageSender bus, string qPath)
-        {
-            bus.Send(new TestMessage
-            {
-                Prop1 = "Property One",
-                Prop2 = "Property Two"
-            }, qPath);
         }
     }
 }
