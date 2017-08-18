@@ -46,6 +46,7 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Concepts\IRunOnStartup.cs" />
     <Compile Include="Concepts\LiteBusMessage.cs" />
     <Compile Include="DomainRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

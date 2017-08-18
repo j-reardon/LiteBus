@@ -27,5 +27,10 @@ namespace LiteBus.Domain.Providers
                 MessageQueue.Create(queuePath);
             }
         }
+
+        private void StartBus()
+        {
+
+        }
     }
 }
