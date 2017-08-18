@@ -8,7 +8,6 @@ namespace LiteBus.Core
 
         public void Handle(TestMessage message)
         {
-            throw new NotImplementedException();
         }
     }
 }

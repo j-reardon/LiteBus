@@ -4,8 +4,7 @@
     {
     }
 
-    public interface IHandleMessages<T>
-        : IHandleMessages
+    public interface IHandleMessages<T> : IHandleMessages
     {
         void Handle(T message);
     }

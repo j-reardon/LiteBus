@@ -3,7 +3,6 @@ using LiteBus.Domain.Concepts;
 using LiteBus.Domain.Providers;
 using StructureMap;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Messaging;
@@ -70,29 +69,50 @@ namespace LiteBus.Host
         {
             var messageType = Type.GetType($"{liteBusMessage.ObjectType}, {liteBusMessage.ObjectAssembly}");
             var message = Convert.ChangeType(_serializer.Deserialize(liteBusMessage.Message, messageType), messageType);
-            var handlers = GetAllHandlerImplementations(message);
+            var handlers = GetAllHandlerImplementations(message).ToList();
+            if (!handlers.Any())
+                throw new InvalidOperationException($"Could not locate handler for message type {messageType}");
+
             foreach (var handler in handlers)
             {
-                handler.Handle(message);
+                var handleMethod = handler.Key.GetRuntimeMethod("Handle", new Type[] { message.GetType() });
+                handleMethod.Invoke(handler.Value, new object[] { message });
             }
         }
 
-        private IEnumerable<IHandleMessages<T>> GetAllHandlerImplementations<T>(T obj)
+        private Dictionary<Type, IHandleMessages> GetAllHandlerImplementations<T>(T obj)
+        {
+            var handlerTypes = GetMatchingHandlerTypes(obj);
+            var handlers = new Dictionary<Type, IHandleMessages>();
+            foreach (var handlerType in handlerTypes)
+            {
+                handlers.Add(handlerType, (IHandleMessages)_container.GetInstance(handlerType));
+            }
+
+            return handlers;
+        }
+
+        private IEnumerable<Type> GetMatchingHandlerTypes<T>(T obj)
         {
             var messageHandlerType = typeof(IHandleMessages);
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
                 .Where(p => messageHandlerType.IsAssignableFrom(p) && !p.IsInterface).ToList();
 
-            var messageHandlers = new List<IHandleMessages<T>>();
+            var messageHandlers = new List<Type>();
             foreach (var handlerType in types)
             {
+                foreach (var interf in handlerType.GetInterfaces())
+                {
+                    var thing = interf;
+                }
+
                 foreach (var type in handlerType.GetInterfaces())
                 {
                     var genericTypeArguments = type.GenericTypeArguments;
                     if (genericTypeArguments.Any(x => x == obj.GetType()))
                     {
-                        messageHandlers.Add((IHandleMessages<T>)_container.GetInstance(handlerType));
+                        messageHandlers.Add(handlerType);
                     }
                 }
             }
