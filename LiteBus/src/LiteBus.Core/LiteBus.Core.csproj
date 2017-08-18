@@ -44,8 +44,6 @@
     <Compile Include="IHandleMessages.cs" />
     <Compile Include="IMessageSender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestHandler.cs" />
-    <Compile Include="TestHandler2.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LiteBus.Domain\LiteBus.Domain.csproj">
