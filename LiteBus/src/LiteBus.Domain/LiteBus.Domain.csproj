@@ -51,6 +51,7 @@
     <Compile Include="DomainRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\IInitializeMessageService.cs" />
+    <Compile Include="Providers\IInstanceFactory.cs" />
     <Compile Include="Providers\IQueuePathProvider.cs" />
     <Compile Include="Providers\ISerializationProvider.cs" />
     <Compile Include="Providers\XmlSerializationProvider.cs" />

@@ -102,11 +102,6 @@ namespace LiteBus.Host
             var messageHandlers = new List<Type>();
             foreach (var handlerType in types)
             {
-                foreach (var interf in handlerType.GetInterfaces())
-                {
-                    var thing = interf;
-                }
-
                 foreach (var type in handlerType.GetInterfaces())
                 {
                     var genericTypeArguments = type.GenericTypeArguments;

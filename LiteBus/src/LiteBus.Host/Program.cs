@@ -2,6 +2,7 @@
 using LiteBus.Domain.Providers;
 using StructureMap;
 using System;
+using System.Reflection;
 using System.ServiceProcess;
 
 namespace LiteBus.Host
@@ -17,6 +18,9 @@ namespace LiteBus.Host
             var messageHandler = new MessageService(initializer, qPathProvider, serializer, container);
             if (Environment.UserInteractive)
             {
+                Console.Write("running as console.");
+                var callingAssembly = Assembly.GetExecutingAssembly();
+                Console.WriteLine("running from assembly {0}.", callingAssembly.GetName().Name);
                 messageHandler.RunAsConsole(args);
             }
             else
